@@ -1,7 +1,8 @@
-# Практика #3: Онлайн-магазин
+"""Практика № 3. Товары, корзина и история заказов магазина."""
 
 class Product:
-    # Включает информацию о цене, наличии на складе и категории товара
+    """Хранит название, цену за штуку, остаток и категорию товара."""
+
     def __init__(self, name: str, price: float, stock: int, category: str):
         self.name = name
         self.price = price
@@ -10,11 +11,15 @@ class Product:
 
 
 class ShoppingCart:
-    def __init__(self):
-        self.items = {}  # Словарь вида {Объект_Product: количество}
+    """Хранит выбранные количества и резервирует товары на складе."""
 
-    # Позволяет добавлять, удалять и обновлять количество товаров
+    def __init__(self):
+        self.items = {}  # Ключ — объект Product, значение — количество.
+
     def add_product(self, product: Product, quantity: int = 1):
+        """Добавить положительное количество товара при наличии на складе."""
+        if quantity <= 0:
+            raise ValueError("Добавляемое количество должно быть положительным.")
         if product.stock >= quantity:
             self.items[product] = self.items.get(product, 0) + quantity
             product.stock -= quantity
@@ -22,11 +27,18 @@ class ShoppingCart:
             print(f"Недостаточно товара '{product.name}' на складе.")
 
     def remove_product(self, product: Product):
+        """Убрать товар из корзины и вернуть его количество на склад."""
         if product in self.items:
             product.stock += self.items[product]
             del self.items[product]
 
     def update_quantity(self, product: Product, new_quantity: int):
+        """Изменить количество зарезервированного товара или убрать его при нуле."""
+        if new_quantity < 0:
+            raise ValueError("Количество товара не может быть отрицательным.")
+        if new_quantity == 0:
+            self.remove_product(product)
+            return
         if product in self.items:
             diff = new_quantity - self.items[product]
             if product.stock >= diff:
@@ -37,7 +49,8 @@ class ShoppingCart:
 
 
 class Order:
-    # Обрабатывает процесс покупки, включая расчет цены с учетом скидок и налогов
+    """Хранит состав заказа и его итоговую стоимость."""
+
     def __init__(self, cart_items: dict, discount: float = 0.0, tax: float = 0.1):
         self.items = cart_items.copy()
         self.discount = discount
@@ -45,6 +58,7 @@ class Order:
         self.total_price = self.calculate_total()
 
     def calculate_total(self):
+        """Применить скидку, начислить налог на остаток и округлить сумму."""
         base_price = sum(product.price * quantity for product, quantity in self.items.items())
         discounted_price = base_price * (1 - self.discount)
         final_price = discounted_price * (1 + self.tax)
@@ -52,13 +66,15 @@ class Order:
 
 
 class Customer:
-    # Управляет информацией о пользователе и его истории заказов
+    """Хранит имя, электронную почту и историю заказов покупателя."""
+
     def __init__(self, name: str, email: str):
         self.name = name
         self.email = email
         self.order_history = []
 
     def checkout(self, cart: ShoppingCart, discount: float = 0.0):
+        """Оформить заказ из корзины и записать его в историю покупателя."""
         if not cart.items:
             return "Корзина пуста!"
 
