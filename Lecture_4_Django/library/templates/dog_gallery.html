@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Фотографии собак{% endblock %}
+
+{% block content %}
+    <h1>Фотографии собак</h1>
+    <form action="{% url 'catalog:dog_gallery' %}" method="get">
+        <label for="breeds">Породы через запятую</label>
+        <input id="breeds" name="breeds" value="{{ entered }}"
+               placeholder="african, chow, dingo" required>
+        <button type="submit">Показать фотографии</button>
+    </form>
+
+    {% if errors %}
+        <ul role="alert">
+            {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if photos %}
+        <section aria-label="Результаты поиска" class="gallery">
+            {% for breed, photo in photos %}
+                <figure>
+                    <img src="{{ photo }}" alt="Собака породы {{ breed }}" loading="lazy">
+                    <figcaption>{{ breed }}</figcaption>
+                </figure>
+            {% endfor %}
+        </section>
+    {% endif %}
+
+    {% if breeds %}
+        <details open>
+            <summary>Доступные породы и подпороды</summary>
+            <ol>
+                {% for breed in breeds %}<li>{{ breed }}</li>{% endfor %}
+            </ol>
+        </details>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ book.title }}</h1>
+    <p>Автор: {{ book.author }}</p>
+    {% if book.description %}
+        {{ book.description|linebreaks }}
+    {% else %}
+        <p>Описание пока не добавлено.</p>
+    {% endif %}
+    <a href="{% url 'catalog:book_list' %}">К списку книг</a>
+{% endblock %}

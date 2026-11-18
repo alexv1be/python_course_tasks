@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог книг{% endblock %}
+
+{% block content %}
+    <h1>Каталог книг</h1>
+    <ul>
+        {% for book in books %}
+            <li>
+                <a href="{% url 'catalog:book_detail' book.pk %}">{{ book.title }}</a>
+                — {{ book.author }}
+            </li>
+        {% empty %}
+            <li>В каталоге пока нет книг. Их можно добавить через админку Django.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
